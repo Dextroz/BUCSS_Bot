@@ -20,47 +20,50 @@ logger.addHandler(handler)
 
 # Bot init.
 bot = commands.Bot(command_prefix="?",
-                   description="A discord bot to get feeds from thehackernews.com")
+                   description="A discord bot to get feeds from thehackernews.com", pm_help=False)
 
 
 @bot.event
 async def on_ready():
     print(f"""
     Logged in as {bot.user.name} ID: {bot.user.id}
-    Connected to {len(bot.servers)} servers
-    Connected to {len(bot.get_all_members())} users.
+    Connected to {str(len(bot.servers))} servers
+    Connected to {str(len(set(bot.get_all_members())))} users.
     --------
 	Current Discord.py Version: {discord.__version__} | Current Python Version: {platform.python_version()}
     --------
 	Use this link to invite {bot.user.name}
-	https://discordapp.com/oauth2/authorize?bot_id={bot.user.id}&scope=bot&permissions=8
+    https://discordapp.com/api/oauth2/authorize?client_id={bot.user.id}&scope=bot&permissions=8
     """)
     # Code for showing playing status.
     return await bot.change_presence(game=discord.Game(name="Reading thehackernews.com"))
 
 
-def set_date(post_date: str):
-    try:
-        with open("./date.txt", "w+") as date_file:
-            date_file.write(post_date)
-            date_file.close()
-    except IOError:
-        logging.error("Failed to open/set post date.")
-
-
 def feed_to_md(feed_url: str):
+    def set_date(post_date: str):
+        try:
+            with open("./date.txt", "w+") as date_file:
+                date_file.write(post_date)
+                date_file.close()
+        except IOError:
+            logging.error("Failed to open/set post date.")
     d = feedparser.parse(feed_url)
     # Fetch the most recent feed item.
     first_post = d["entries"][0]
     title = first_post["title"]
     summary = first_post["summary"]
     post_date = first_post["published"]
-    summary = html2text.html2text(summary)
+    link = first_post["link"]
+    h = html2text.HTML2Text()
+    h.ignore_images = True
+    h.ignore_links = True
+    summary = h.handle(summary)
     post = f"""
 {title}
 {post_date}
 \n---------------------------------------\n
 {summary}
+Read more at {link}
 """
     set_date(post_date)
     return post
@@ -78,12 +81,12 @@ def check_date(feed_url: str):
 
 async def background_task():
     await bot.wait_until_ready()
-    channel = discord.Object(id='Insert channel_id here.')
+    channel = discord.Object(id="Insert Channel_id here.")
     # Send init message.
     await bot.send_message(channel, feed_to_md("https://thehackernews.com/feeds/posts/default"))
     while not bot.is_closed:
         # Check the top post's date from RSS feed.
-        post_date = await check_date("https://thehackernews.com/feeds/posts/default")
+        post_date = check_date("https://thehackernews.com/feeds/posts/default")
         try:
             with open("./date.txt", "r") as date_file:
                 # The date of first post, stored in date.txt
@@ -100,6 +103,5 @@ async def background_task():
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
 
-
 bot.loop.create_task(background_task())
-bot.run("Insert You're Token Here.")
+bot.run("Insert Token Here.")
