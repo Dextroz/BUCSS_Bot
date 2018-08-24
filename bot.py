@@ -38,16 +38,15 @@ async def on_ready():
     # Code for showing playing status.
     return await bot.change_presence(game=discord.Game(name="Reading thehackernews.com"))
 
-"""
-Function for converting rss feed into markdown text.
-"""
-
 
 def feed_to_md(feed_url: str):
-    """Nested function for setting the date of the top post from rss feed
-    Invoked at the end of feed_to_md()
+    """
+    Function for converting rss feed into markdown text.
     """
     def set_date(post_date: str):
+        """Nested function for setting the date of the top post from rss feed
+        Invoked at the end of feed_to_md()
+        """
         try:
             with open("./date.txt", "w+") as date_file:
                 date_file.write(post_date)
