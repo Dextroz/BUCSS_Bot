@@ -22,6 +22,7 @@ To add the bot to you're server for testing do the following:
 2. Under settings select bot; See image below:
 
 ![bot.png](bot.png)
+
 3. Add a bot user and copy the token. Insert the token into:
     ```
     bot.run("Insert You're Token Here.")
