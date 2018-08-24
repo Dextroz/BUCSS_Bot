@@ -38,8 +38,15 @@ async def on_ready():
     # Code for showing playing status.
     return await bot.change_presence(game=discord.Game(name="Reading thehackernews.com"))
 
+"""
+Function for converting rss feed into markdown text.
+"""
+
 
 def feed_to_md(feed_url: str):
+    """Nested function for setting the date of the top post from rss feed
+    Invoked at the end of feed_to_md()
+    """
     def set_date(post_date: str):
         try:
             with open("./date.txt", "w+") as date_file:
@@ -70,7 +77,7 @@ Read more at {link}
 
 
 """
-Used to re-check the current date of the latest post from RSS feed.
+Function used to re-check the current date of the latest post from RSS feed.
 """
 
 
@@ -80,6 +87,11 @@ def check_date(feed_url: str):
     first_post = d["entries"][0]
     post_date = first_post["published"]
     return post_date
+
+
+"""
+Background function; runs and checks every 1 hour if rss feed has been updated.
+"""
 
 
 async def background_task():
@@ -120,5 +132,6 @@ async def add(left: int, right: int):
 async def ping(*args):
     await bot.say(":ping_pong: Pong!")
 
+# Create the background task to run in the background.
 bot.loop.create_task(background_task())
 bot.run("Insert Key here.")
