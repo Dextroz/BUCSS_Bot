@@ -1,8 +1,8 @@
-# hackernews_reader
-A discord bot for reading thehackernews.com
+# BUCSS_Bot
+A discord bot for BUCSS
 
 ## Dependancies
-The bot is written in Python 3 so its **REQUIRED**
+The bot is written in Python 3.6 so its **REQUIRED**
 
 It requires the following packages:
 
@@ -11,12 +11,26 @@ It requires the following packages:
 3. feedparser
 4. html2text
 
+## Contributing!
+**All pull requests are welcome!**
+
 ## Prerequisites
 
-```
-channel = discord.Object(id='Insert channel_id here.')
-bot.run("Insert You're Token Here.")
-```
+To add the bot to you're server for testing do the following:
+
+1. Head to [discord application](https://discordapp.com/developers/applications/) and select an **create an application**.
+2. Under settings select bot ![bot.png](bot.png)
+3. Add a bot user and copy the token. Insert the token into:
+    ```
+    bot.run("Insert You're Token Here.")
+    ```
+4. Execute the [bot.py](bot.py) and go to the link provided in the console:
+    Should look something like: `https://discordapp.com/api/oauth2/authorize?client_id={bot.user.id}&scope=bot&permissions=8`
+5. Select the server for the bot to be added to.
+6. Configure this variable to tell the bot what channel to output the rss feed.
+    ```
+    channel = discord.Object(id='Insert channel_id here.')
+    ```
 
 ## Authors -- Contributors
 
