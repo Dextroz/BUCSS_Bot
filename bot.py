@@ -125,13 +125,21 @@ Other bot commands
 
 @bot.command()
 async def add(left: int, right: int):
+    """Adds two numbers together"""
     await bot.say(left + right)
 
 
 @bot.command()
 async def ping(*args):
+    """Pongs back!"""
     await bot.say(":ping_pong: Pong!")
+
+
+@bot.command()
+async def force(feed_url: str):
+    """Forces the bot to post the top post from rss feed, no matter the channel"""
+    await bot.say(feed_to_md(feed_url))
 
 # Create the background task to run in the background.
 bot.loop.create_task(background_task())
-bot.run("Insert Key here.")
+bot.run("Insert Key Here.")
