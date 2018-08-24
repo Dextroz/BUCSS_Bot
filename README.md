@@ -19,7 +19,9 @@ It requires the following packages:
 To add the bot to you're server for testing do the following:
 
 1. Head to [discord application](https://discordapp.com/developers/applications/) and select an **create an application**.
-2. Under settings select bot ![bot.png](bot.png)
+2. Under settings select bot; See image below:
+
+![bot.png](bot.png)
 3. Add a bot user and copy the token. Insert the token into:
     ```
     bot.run("Insert You're Token Here.")
