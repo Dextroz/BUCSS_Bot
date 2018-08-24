@@ -20,7 +20,7 @@ logger.addHandler(handler)
 
 # Bot init.
 bot = commands.Bot(command_prefix="?",
-                   description="A discord bot to get feeds from thehackernews.com", pm_help=False)
+                   description="A discord bot for BUCSS", pm_help=False)
 
 
 @bot.event
@@ -58,7 +58,7 @@ def feed_to_md(feed_url: str):
     h.ignore_images = True
     h.ignore_links = True
     summary = h.handle(summary)
-    post = f"""
+    post = f"""\n
 {title}
 {post_date}
 \n---------------------------------------\n
@@ -68,9 +68,12 @@ Read more at {link}
     set_date(post_date)
     return post
 
+
 """
 Used to re-check the current date of the latest post from RSS feed.
 """
+
+
 def check_date(feed_url: str):
     d = feedparser.parse(feed_url)
     # Fetch the most recent feed item.
@@ -81,7 +84,7 @@ def check_date(feed_url: str):
 
 async def background_task():
     await bot.wait_until_ready()
-    channel = discord.Object(id="Insert Channel_id here.")
+    channel = discord.Object(id="Insert channel here.")
     # Send init message.
     await bot.send_message(channel, feed_to_md("https://thehackernews.com/feeds/posts/default"))
     while not bot.is_closed:
@@ -95,7 +98,7 @@ async def background_task():
                     # If date is still the same, do nothing ie: pass.
                     pass
                 elif ((data) != (post_date)):
-                    # if dates are different 
+                    # if dates are different
                     await bot.send_message(channel, feed_to_md("https://thehackernews.com/feeds/posts/default"))
                 date_file.close()
         except IOError:
@@ -103,5 +106,19 @@ async def background_task():
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
 
+"""
+Other bot commands
+"""
+
+
+@bot.command()
+async def add(left: int, right: int):
+    await bot.say(left + right)
+
+
+@bot.command()
+async def ping(*args):
+    await bot.say(":ping_pong: Pong!")
+
 bot.loop.create_task(background_task())
-bot.run("Insert Token Here.")
+bot.run("Insert Key here.")
