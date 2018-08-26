@@ -1,0 +1,10 @@
+{
+  "hacker_news": {
+    "url": "https://thehackernews.com/feeds/posts/default",
+    "date": ""
+  },
+  "krebs_security": {
+    "url": "https://krebsonsecurity.com/feed/",
+    "date": ""
+  }
+}

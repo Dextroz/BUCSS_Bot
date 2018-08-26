@@ -16,7 +16,16 @@ It requires the following packages:
 
 ## Prerequisites
 
-To add the bot to you're server for testing do the following:
+Add rss feeds to [feeds.json](feeds.json) in the format of:
+```
+,
+"Insert a title here": {
+    "url": "Insert RSS feed url here.",
+    "date": ""
+  }
+```
+
+To use the bot do the following:
 
 1. Head to [discord application](https://discordapp.com/developers/applications/) and select an **create an application**.
 2. Under settings select bot; See image below:

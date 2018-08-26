@@ -1,11 +1,6 @@
 try:
-    import discord
-    import logging
-    import platform
+    import discord, logging, asyncio, feedparser, html2text, json, datetime
     from discord.ext import commands
-    import asyncio
-    import feedparser
-    import html2text
 except ImportError as err:
     print(f"Failed to import required modules: {err}")
 
@@ -25,36 +20,46 @@ bot = commands.Bot(command_prefix="?",
 
 @bot.event
 async def on_ready():
+    """Executes when bot is starting up"""
     print(f"""
     Logged in as {bot.user.name} ID: {bot.user.id}
     Connected to {str(len(bot.servers))} servers
     Connected to {str(len(set(bot.get_all_members())))} users.
     --------
-	Current Discord.py Version: {discord.__version__} | Current Python Version: {platform.python_version()}
+	Current Discord.py Version: {discord.__version__}
     --------
 	Use this link to invite {bot.user.name}
     https://discordapp.com/api/oauth2/authorize?client_id={bot.user.id}&scope=bot&permissions=8
     """)
     # Code for showing playing status.
-    return await bot.change_presence(game=discord.Game(name="Reading thehackernews.com"))
+    return await bot.change_presence(game=discord.Game(name="Reading Hacking News."))
 
 
-def feed_to_md(feed_url: str):
-    """
-    Function for converting rss feed into markdown text.
-    """
-    def set_date(post_date: str):
-        """Nested function for setting the date of the top post from rss feed
-        Invoked at the end of feed_to_md()
-        """
-        try:
-            with open("./date.txt", "w+") as date_file:
-                date_file.write(post_date)
-                date_file.close()
-        except IOError:
-            logging.error("Failed to open/set post date.")
-    d = feedparser.parse(feed_url)
-    # Fetch the most recent feed item.
+async def set_date(feed_name, post_date: str):
+    """Set the date of latest post from rss feed"""
+    try:
+        with open("feeds.json", "r+") as feed_file:
+            # Load json structure into memory.
+            feeds = json.load(feed_file)
+            for name, feed_data in feeds.items():
+                if ((name) == (feed_name)):
+                    # Replace value of date with post_date
+                    feed_data["date"] = post_date
+                    # Go to the top of feeds.json file.
+                    feed_file.seek(0)
+                    # Dump the new json structure to the file.
+                    json.dump(feeds, feed_file, indent=2)
+                    feed_file.truncate()
+            feed_file.close()
+    except IOError:
+        logging.error("set_date(): Failed to open feeds.json.")
+
+
+async def feed_to_md(name, feed_data):
+    """A Function for converting rss feed into markdown text."""
+    # Parse rss feed.
+    d = feedparser.parse(feed_data["url"])
+    # Target the first post.
     first_post = d["entries"][0]
     title = first_post["title"]
     summary = first_post["summary"]
@@ -65,61 +70,51 @@ def feed_to_md(feed_url: str):
     h.ignore_links = True
     summary = h.handle(summary)
     post = f"""\n
-{title}
-{post_date}
+**{title}**
+*{post_date}*
 \n---------------------------------------\n
 {summary}
-Read more at {link}
-"""
-    set_date(post_date)
+Read more at: {link}"""
+    await set_date(name, post_date)
     return post
 
 
-"""
-Function used to re-check the current date of the latest post from RSS feed.
-"""
-
-
-def check_date(feed_url: str):
-    d = feedparser.parse(feed_url)
+async def check_date(feed_data):
+    """Function used to re-check the current date of the latest post from RSS feed."""
+    d = feedparser.parse(feed_data["url"])
     # Fetch the most recent feed item.
     first_post = d["entries"][0]
     post_date = first_post["published"]
     return post_date
 
 
-"""
-Background function; runs and checks every 1 hour if rss feed has been updated.
-"""
-
-
-async def background_task():
+async def update_feed():
+    """Background Task: Check feeds."""
     await bot.wait_until_ready()
-    channel = discord.Object(id="Insert channel here.")
-    # Send init message.
-    await bot.send_message(channel, feed_to_md("https://thehackernews.com/feeds/posts/default"))
     while not bot.is_closed:
-        # Check the top post's date from RSS feed.
-        post_date = check_date("https://thehackernews.com/feeds/posts/default")
         try:
-            with open("./date.txt", "r") as date_file:
-                # The date of first post, stored in date.txt
-                data = date_file.read()
-                if ((data) == (post_date)):
-                    # If date is still the same, do nothing ie: pass.
-                    pass
-                elif ((data) != (post_date)):
-                    # if dates are different
-                    await bot.send_message(channel, feed_to_md("https://thehackernews.com/feeds/posts/default"))
-                date_file.close()
+            with open("feeds.json", "r") as feed_file:
+                feeds = json.load(feed_file)
+                feed_file.close()
         except IOError:
-            logging.error("Failed to open/read data.txt")
+            logging.error("Failed to open feeds.json")
+        channel = discord.Object(id="Insert channel_id here.")
+        for name, feed_data in feeds.items():
+            post_date = await check_date(feed_data)
+            # Checking if date is the same as date in feeds.json file.
+            # If the same, pass; do nothing.
+            if ((feed_data["date"]) == (post_date)):
+                pass
+            # If different ie: Not equal too, run and post the feed; updating the date in feeds.json.
+            elif ((feed_data["date"]) != (post_date)):
+                logging.info(
+                    f"Running feed_to_md for {name} at {datetime.datetime.now()}")
+                post = await feed_to_md(name, feed_data)
+                await bot.send_message(channel, post)
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
 
-"""
-Other bot commands
-"""
+# Other bot commands below.
 
 
 @bot.command()
@@ -135,10 +130,28 @@ async def ping(*args):
 
 
 @bot.command()
-async def force(feed_url: str):
-    """Forces the bot to post the top post from rss feed, no matter the channel"""
-    await bot.say(feed_to_md(feed_url))
+async def forcepost(feed_url: str):
+    """Force top feed post"""
+    # Parse rss feed.
+    d = feedparser.parse(feed_url)
+    # Target the first post.
+    first_post = d["entries"][0]
+    title = first_post["title"]
+    summary = first_post["summary"]
+    post_date = first_post["published"]
+    link = first_post["link"]
+    h = html2text.HTML2Text()
+    h.ignore_images = True
+    h.ignore_links = True
+    summary = h.handle(summary)
+    post = f"""\n
+**{title}**
+*{post_date}*
+\n---------------------------------------\n
+{summary}
+Read more at: {link}"""
+    await bot.say(post)
 
-# Create the background task to run in the background.
-bot.loop.create_task(background_task())
-bot.run("Insert Key Here.")
+# Start the background task update_feed()
+bot.loop.create_task(update_feed())
+bot.run("Insert Token.")
