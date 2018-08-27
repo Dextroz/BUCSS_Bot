@@ -6,5 +6,9 @@
   "krebs_security": {
     "url": "https://krebsonsecurity.com/feed/",
     "date": ""
+  },
+  "latest_hacking_news": {
+    "url": "https://latesthackingnews.com/feed/",
+    "date": ""
   }
 }
