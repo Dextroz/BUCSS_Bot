@@ -1,5 +1,5 @@
 try:
-    import discord, logging, asyncio, feedparser, html2text, json, datetime
+    import discord, logging, asyncio, feedparser, html2text, json, datetime, aiohttp
     from discord.ext import commands
 except ImportError as err:
     print(f"Failed to import required modules: {err}")
@@ -116,6 +116,15 @@ async def update_feed():
 
 # Other bot commands below.
 
+async def get_image(endpoint: str, key: str):
+    """Used to get images from an endpoint and return the image url."""
+    async with aiohttp.get(endpoint) as resp:
+        if ((resp.status) == (200)):
+            json_resp = await resp.json()
+            image_url = json_resp[key]
+            return image_url
+        else:
+            logging.error("Request failed.")
 
 @bot.command()
 async def add(left: int, right: int):
@@ -151,6 +160,22 @@ async def forcepost(feed_url: str):
 {summary}
 Read more at: {link}"""
     await bot.say(post)
+
+@bot.command(pass_context=True)
+async def cat(ctx):
+    """Get a cool cat image"""
+    endpoint = "http://aws.random.cat/meow"
+    image_url = await get_image(endpoint, "file")
+    embed = discord.Embed().set_image(url=image_url)
+    await bot.send_message(ctx.message.channel, embed=embed)
+
+@bot.command(pass_context=True)
+async def dog(ctx):
+    """Get a cool dog image"""
+    endpoint = "https://random.dog/woof.json"
+    image_url = await get_image(endpoint, "url")
+    embed = discord.Embed().set_image(url=image_url)
+    await bot.send_message(ctx.message.channel, embed=embed)
 
 # Start the background task update_feed()
 bot.loop.create_task(update_feed())
