@@ -1,8 +1,11 @@
 try:
-    import discord, logging, asyncio, feedparser, html2text, json, datetime, aiohttp
+    import discord, logging, asyncio, feedparser, html2text, json, datetime
     from discord.ext import commands
+    from functions.rss import set_date, feed_to_md, check_date
+    from functions.utils import get_image
+    from config import BOT_TOKEN, CHANNEL_ID, COMMAND_PREFIX, BOT_DESCRIPTION
 except ImportError as err:
-    print(f"Failed to import required modules: {err}")
+    print(f"Failed to import required modules for bot.py: {err}")
 
 # Setup Logging for errors.
 logger = logging.getLogger('discord')
@@ -14,8 +17,8 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 # Bot init.
-bot = commands.Bot(command_prefix="?",
-                   description="A discord bot for BUCSS", pm_help=False)
+bot = commands.Bot(command_prefix=COMMAND_PREFIX,
+                   description=BOT_DESCRIPTION, pm_help=False)
 
 
 @bot.event
@@ -35,59 +38,6 @@ async def on_ready():
     return await bot.change_presence(game=discord.Game(name="Reading Hacking News."))
 
 
-async def set_date(feed_name, post_date: str):
-    """Set the date of latest post from rss feed"""
-    try:
-        with open("feeds.json", "r+") as feed_file:
-            # Load json structure into memory.
-            feeds = json.load(feed_file)
-            for name, feed_data in feeds.items():
-                if ((name) == (feed_name)):
-                    # Replace value of date with post_date
-                    feed_data["date"] = post_date
-                    # Go to the top of feeds.json file.
-                    feed_file.seek(0)
-                    # Dump the new json structure to the file.
-                    json.dump(feeds, feed_file, indent=2)
-                    feed_file.truncate()
-            feed_file.close()
-    except IOError:
-        logging.error("set_date(): Failed to open feeds.json.")
-
-
-async def feed_to_md(name, feed_data):
-    """A Function for converting rss feed into markdown text."""
-    # Parse rss feed.
-    d = feedparser.parse(feed_data["url"])
-    # Target the first post.
-    first_post = d["entries"][0]
-    title = first_post["title"]
-    summary = first_post["summary"]
-    post_date = first_post["published"]
-    link = first_post["link"]
-    h = html2text.HTML2Text()
-    h.ignore_images = True
-    h.ignore_links = True
-    summary = h.handle(summary)
-    post = f"""\n
-**{title}**
-*{post_date}*
-\n---------------------------------------\n
-{summary}
-Read more at: {link}"""
-    await set_date(name, post_date)
-    return post
-
-
-async def check_date(feed_data):
-    """Function used to re-check the current date of the latest post from RSS feed."""
-    d = feedparser.parse(feed_data["url"])
-    # Fetch the most recent feed item.
-    first_post = d["entries"][0]
-    post_date = first_post["published"]
-    return post_date
-
-
 async def update_feed():
     """Background Task: Check feeds."""
     await bot.wait_until_ready()
@@ -98,7 +48,7 @@ async def update_feed():
                 feed_file.close()
         except IOError:
             logging.error("Failed to open feeds.json")
-        channel = discord.Object(id="Insert channel_id here.")
+        channel = discord.Object(id=CHANNEL_ID)
         for name, feed_data in feeds.items():
             post_date = await check_date(feed_data)
             # Checking if date is the same as date in feeds.json file.
@@ -110,21 +60,11 @@ async def update_feed():
                 logging.info(
                     f"Running feed_to_md for {name} at {datetime.datetime.now()}")
                 post = await feed_to_md(name, feed_data)
-                await bot.send_message(channel, post)
+                await bot.send_message(channel, embed=post)
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
 
 # Other bot commands below.
-
-async def get_image(endpoint: str, key: str):
-    """Used to get images from an endpoint and return the image url."""
-    async with aiohttp.get(endpoint) as resp:
-        if ((resp.status) == (200)):
-            json_resp = await resp.json()
-            image_url = json_resp[key]
-            return image_url
-        else:
-            logging.error("Request failed.")
 
 @bot.command()
 async def add(left: int, right: int):
@@ -153,30 +93,27 @@ async def forcepost(feed_url: str):
     h.ignore_images = True
     h.ignore_links = True
     summary = h.handle(summary)
-    post = f"""\n
-**{title}**
-*{post_date}*
-\n---------------------------------------\n
-{summary}
-Read more at: {link}"""
-    await bot.say(post)
+    # Seters for embedded post formatting.
+    post = discord.Embed(title=title, description=summary, url=link)
+    post.set_footer(text=post_date)
+    await bot.say(embed=post)
 
-@bot.command(pass_context=True)
-async def cat(ctx):
+@bot.command()
+async def cat():
     """Get a cool cat image"""
     endpoint = "http://aws.random.cat/meow"
     image_url = await get_image(endpoint, "file")
     embed = discord.Embed().set_image(url=image_url)
-    await bot.send_message(ctx.message.channel, embed=embed)
+    await bot.say(embed=embed)
 
-@bot.command(pass_context=True)
-async def dog(ctx):
+@bot.command()
+async def dog():
     """Get a cool dog image"""
     endpoint = "https://random.dog/woof.json"
     image_url = await get_image(endpoint, "url")
     embed = discord.Embed().set_image(url=image_url)
-    await bot.send_message(ctx.message.channel, embed=embed)
+    await bot.say(embed=embed)
 
 # Start the background task update_feed()
 bot.loop.create_task(update_feed())
-bot.run("Insert Token.")
+bot.run(BOT_TOKEN)
