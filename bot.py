@@ -94,7 +94,7 @@ async def forcepost(feed_url: str):
     h.ignore_links = True
     summary = h.handle(summary)
     # Seters for embedded post formatting.
-    post = discord.Embed(title=title, description=summary, url=link)
+    post = discord.Embed(title=title, description=summary, url=link, colour="FF7000")
     post.set_footer(text=post_date)
     await bot.say(embed=post)
 
@@ -103,7 +103,7 @@ async def cat():
     """Get a cool cat image"""
     endpoint = "http://aws.random.cat/meow"
     image_url = await get_image(endpoint, "file")
-    embed = discord.Embed().set_image(url=image_url)
+    embed = discord.Embed(colour="FF7000").set_image(url=image_url)
     await bot.say(embed=embed)
 
 @bot.command()
@@ -111,7 +111,7 @@ async def dog():
     """Get a cool dog image"""
     endpoint = "https://random.dog/woof.json"
     image_url = await get_image(endpoint, "url")
-    embed = discord.Embed().set_image(url=image_url)
+    embed = discord.Embed(colour="FF7000").set_image(url=image_url)
     await bot.say(embed=embed)
 
 # Start the background task update_feed()

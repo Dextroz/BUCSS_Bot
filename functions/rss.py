@@ -38,7 +38,7 @@ async def feed_to_md(name, feed_data):
     h.ignore_links = True
     summary = h.handle(summary)
     # Seters for embedded post formatting.
-    post = discord.Embed(title=title, description=summary, url=link)
+    post = discord.Embed(title=title, description=summary, url=link, colour="FF7000")
     post.set_footer(text=post_date)
     await set_date(name, post_date)
     return post
