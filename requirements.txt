@@ -4,6 +4,9 @@
 # functions/utils.py: 2
 aiohttp == 1.0.5
 
+# functions/utils.py: 2
+beautifulsoup4 == 4.6.0
+
 # bot.py: 2,3
 # functions/rss.py: 2
 discord.py == 0.16.12
