@@ -1,8 +1,9 @@
 try:
     import discord, logging, asyncio, feedparser, html2text, json, datetime
     from discord.ext import commands
+    from urllib.parse import urlencode
     from functions.rss import set_date, feed_to_md, check_date
-    from functions.utils import get_image
+    from functions.utils import get_image, google_search
     from config import BOT_TOKEN, CHANNEL_ID, COMMAND_PREFIX, BOT_DESCRIPTION
 except ImportError as err:
     print(f"Failed to import required modules for bot.py: {err}")
@@ -82,21 +83,24 @@ async def ping(*args):
 async def forcepost(feed_url: str):
     """Force top feed post"""
     # Parse rss feed.
-    d = feedparser.parse(feed_url)
-    # Target the first post.
-    first_post = d["entries"][0]
-    title = first_post["title"]
-    summary = first_post["summary"]
-    post_date = first_post["published"]
-    link = first_post["link"]
-    h = html2text.HTML2Text()
-    h.ignore_images = True
-    h.ignore_links = True
-    summary = h.handle(summary)
-    # Seters for embedded post formatting.
-    post = discord.Embed(title=title, description=summary, url=link, colour=discord.Color.orange())
-    post.set_footer(text=post_date)
-    await bot.say(embed=post)
+    if feed_url:
+        d = feedparser.parse(feed_url)
+        # Target the first post.
+        first_post = d["entries"][0]
+        title = first_post["title"]
+        summary = first_post["summary"]
+        post_date = first_post["published"]
+        link = first_post["link"]
+        h = html2text.HTML2Text()
+        h.ignore_images = True
+        h.ignore_links = True
+        summary = h.handle(summary)
+        # Seters for embedded post formatting.
+        post = discord.Embed(title=title, description=summary, url=link, colour=discord.Color.orange())
+        post.set_footer(text=post_date)
+        await bot.say(embed=post)
+    else:
+        await bot.say("forcepost missing feed_url parameter.")
 
 @bot.command()
 async def cat():
@@ -113,6 +117,22 @@ async def dog():
     image_url = await get_image(endpoint, "url")
     embed = discord.Embed(colour=discord.Color.orange()).set_image(url=image_url)
     await bot.say(embed=embed)
+
+@bot.command(pass_context=True)
+async def search(search_query):
+    """Uses Google's Search Engine"""
+    search_query = str(search_query.message.content).split(">search ", maxsplit=1)[1]
+    if len(search_query) > 1: 
+        endpoint = f"https://www.google.co.uk/search?{urlencode({'q':search_query})}&num=10&hl=en"
+        header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.3; Win64; x64) Gecko/20100101 Firefox/53.0'}
+        results = await google_search(endpoint, header)
+        embed = discord.Embed(title="Google Search Results:", colour=discord.Color.orange(),
+                              description=f"Top Result: **{results[0]}**\n**More Results**\n"
+                              f"{results[1]}\n{results[2]}")
+        await bot.say(embed=embed)
+    else:
+        await bot.say("Search function is missing search parameters")
+
 
 # Start the background task update_feed()
 bot.loop.create_task(update_feed())
