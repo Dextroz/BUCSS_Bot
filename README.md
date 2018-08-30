@@ -4,13 +4,10 @@ A discord bot for [BUCSS](https://www.bucss.net/) (Bournemouth University Cyber 
 ## Dependancies
 The bot is written in Python 3.6 so its **REQUIRED**
 
-It requires the following packages:
-
-1. discord.py
-2. asyncio
-3. feedparser
-4. html2text
-5. aiohttp
+To install all the dependancies using pip; run the following command:
+```
+pip3 install -r requirements.txt
+```
 
 ## Contributing!
 **All pull requests are welcome!**
