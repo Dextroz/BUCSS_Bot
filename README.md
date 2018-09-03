@@ -23,12 +23,24 @@ Add rss feeds to [feeds.json](feeds.json) in the format of:
   }
 ```
 
+Add twitter screen name (Username) to [twitter.json](twitter.json) in the format of:
+```
+,
+"Insert twitter screen name (username) here.": {
+    "date": ""
+  }
+```
+
 Configure the required variables in [config.py](config.py):
 ```
 BOT_TOKEN = "Insert Bot Token Here."
 CHANNEL_ID = "Insert Channel ID Here."
 COMMAND_PREFIX = "Insert Command Prefix Here."
 BOT_DESCRIPTION = "Insert Bot Description Here."
+TWITTER_API_KEY = ""
+TWITTER_API_S = ""
+TWITTER_ACCESS_TOKEN = ""
+TWITTER_ACCESS_TOKEN_S = ""
 ```
 
 To use the bot do the following:
@@ -45,6 +57,7 @@ To use the bot do the following:
 ## Authors -- Contributors
 
 * **Daniel Brennand** - *Author* - [Dextroz](https://github.com/Dextroz)
+* **A** - *Contributor* - [A](https://github.com/s5003597)
 
 ## License
 

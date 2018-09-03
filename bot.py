@@ -2,15 +2,16 @@ try:
     import discord, logging, asyncio, feedparser, html2text, json, datetime
     from discord.ext import commands
     from urllib.parse import urlencode
-    from functions.rss import set_date, feed_to_md, check_date
-    from functions.utils import get_image, google_search
-    from config import BOT_TOKEN, CHANNEL_ID, COMMAND_PREFIX, BOT_DESCRIPTION
+    from functions.rss import feed_to_md
+    from functions.utils import get_image, google_search, twitter_search
+    # Import all vars from config.py
+    from config import *
 except ImportError as err:
     print(f"Failed to import required modules for bot.py: {err}")
 
 # Setup Logging for errors.
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(
     filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter(
@@ -51,19 +52,50 @@ async def update_feed():
             logging.error("Failed to open feeds.json")
         channel = discord.Object(id=CHANNEL_ID)
         for name, feed_data in feeds.items():
-            post_date = await check_date(feed_data)
+            results = await feed_to_md(None, name, feed_data)
             # Checking if date is the same as date in feeds.json file.
             # If the same, pass; do nothing.
-            if ((feed_data["date"]) == (post_date)):
+            if ((feed_data["date"]) == (results[0]["post_date"])):
                 pass
             # If different ie: Not equal too, run and post the feed; updating the date in feeds.json.
-            elif ((feed_data["date"]) != (post_date)):
+            elif ((feed_data["date"]) != (results[0]["post_date"])):
                 logging.info(
                     f"Running feed_to_md for {name} at {datetime.datetime.now()}")
-                post = await feed_to_md(name, feed_data)
-                await bot.send_message(channel, embed=post)
+                results = await feed_to_md("set", name, feed_data)
+                embed = discord.Embed(title=results[0]["title"], url=results[0]["url"],
+                                      description=results[0]["summary"], colour=discord.Color.orange())
+                embed.set_footer(text=results[0]["post_date"])
+                await bot.send_message(channel, embed=embed)
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
+
+async def twitter():
+    """Background Task: Check Twitter."""
+    await bot.wait_until_ready()
+    while not bot.is_closed:
+        try:
+            with open("twitter.json", "r") as twitter_file:
+                items = json.load(twitter_file)
+                twitter_file.close()
+        except IOError:
+            logging.error("Failed to open twitter.json")
+        channel = discord.Object(id=CHANNEL_ID)
+        twitter_keys = {"keys": [TWITTER_API_KEY, TWITTER_API_S,
+                                TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_S]}
+        for name, data in items.items():
+            results = await twitter_search(None, name, twitter_keys)
+            if ((data["date"]) == (results[0]["date"])):
+                pass
+            elif ((data["date"]) != (results[0]["date"])):
+                logging.info(
+                    f"Running twitter_search for {name} at {datetime.datetime.now()}")
+                results = await twitter_search("set", name, twitter_keys)
+                embed = discord.Embed(title=results[0]["username"], url=results[0]["url"],
+                                        description=results[0]["text"], colour=discord.Color.orange())
+                embed.set_footer(text=results[0]["date"])
+                await bot.send_message(channel, embed=embed)
+            # Sleep for 1 hour before re-checking.
+            await asyncio.sleep(3600)
 
 # Other bot commands below.
 
@@ -100,7 +132,8 @@ async def forcepost(feed_url: str):
         post.set_footer(text=post_date)
         await bot.say(embed=post)
     else:
-        await bot.say("forcepost missing feed_url parameter.")
+        await bot.say(":no_entry_sign: forcepost missing feed_url parameter.")
+        logging.error("forcepost missing feed_url parameter.")
 
 @bot.command()
 async def cat():
@@ -131,9 +164,11 @@ async def search(search_query):
                               f"{results[1]}\n{results[2]}")
         await bot.say(embed=embed)
     else:
-        await bot.say("Search function is missing search parameters")
+        await bot.say(":no_entry_sign: Search function is missing search parameters")
+        logging.error("Search function is missing search parameters")
 
 
 # Start the background task update_feed()
 bot.loop.create_task(update_feed())
+bot.loop.create_task(twitter())
 bot.run(BOT_TOKEN)

@@ -2,13 +2,12 @@
 # https://github.com/damnever/pigar
 
 # functions/utils.py: 2
-aiohttp == 1.0.5
+aiohttp == 3.4.1
 
 # functions/utils.py: 2
 beautifulsoup4 == 4.6.0
 
 # bot.py: 2,3
-# functions/rss.py: 2
 discord.py == 0.16.12
 
 # bot.py: 2
@@ -18,3 +17,6 @@ feedparser == 5.2.1
 # bot.py: 2
 # functions/rss.py: 2
 html2text == 2018.1.9
+
+# functions/utils.py: 3
+peony_twitter == 1.1.0
