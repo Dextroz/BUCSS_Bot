@@ -26,7 +26,8 @@ async def feed_to_md(state, name, feed_data):
         # set_date() see utils.py
         await set_date("feeds.json", name, post_date)
     results = []
-    result = {"title": title, "summary": summary, "url": link, "post_date": post_date}
+    result = {"title": title, "summary": summary,
+              "url": link, "post_date": post_date}
     results.append(result)
     # A list containing the dict object result.
     return results

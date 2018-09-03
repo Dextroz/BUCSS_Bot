@@ -69,6 +69,7 @@ async def update_feed():
         # Sleep for 1 hour before re-checking.
         await asyncio.sleep(3600)
 
+
 async def twitter():
     """Background Task: Check Twitter."""
     await bot.wait_until_ready()
@@ -81,7 +82,7 @@ async def twitter():
             logging.error("Failed to open twitter.json")
         channel = discord.Object(id=CHANNEL_ID_A)
         twitter_keys = {"keys": [TWITTER_API_KEY, TWITTER_API_S,
-                                TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_S]}
+                                 TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_S]}
         for name, data in items.items():
             results = await twitter_search(None, name, twitter_keys)
             if ((data["date"]) == (results[0]["date"])):
@@ -91,13 +92,14 @@ async def twitter():
                     f"Running twitter_search for {name} at {datetime.datetime.now()}")
                 results = await twitter_search("set", name, twitter_keys)
                 embed = discord.Embed(title=results[0]["username"], url=results[0]["url"],
-                                        description=results[0]["text"], colour=discord.Color.orange())
+                                      description=results[0]["text"], colour=discord.Color.orange())
                 embed.set_footer(text=results[0]["date"])
                 await bot.send_message(channel, embed=embed)
             # Sleep for 1 hour before re-checking.
             await asyncio.sleep(3600)
 
 # Other bot commands below.
+
 
 @bot.command()
 async def add(left: int, right: int):
@@ -128,36 +130,44 @@ async def forcepost(feed_url: str):
         h.ignore_links = True
         summary = h.handle(summary)
         # Seters for embedded post formatting.
-        post = discord.Embed(title=title, description=summary, url=link, colour=discord.Color.orange())
+        post = discord.Embed(title=title, description=summary,
+                             url=link, colour=discord.Color.orange())
         post.set_footer(text=post_date)
         await bot.say(embed=post)
     else:
         await bot.say(":no_entry_sign: forcepost missing feed_url parameter.")
         logging.error("forcepost missing feed_url parameter.")
 
+
 @bot.command()
 async def cat():
     """Get a cool cat image"""
     endpoint = "http://aws.random.cat/meow"
     image_url = await get_image(endpoint, "file")
-    embed = discord.Embed(colour=discord.Color.orange()).set_image(url=image_url)
+    embed = discord.Embed(colour=discord.Color.orange()
+                          ).set_image(url=image_url)
     await bot.say(embed=embed)
+
 
 @bot.command()
 async def dog():
     """Get a cool dog image"""
     endpoint = "https://random.dog/woof.json"
     image_url = await get_image(endpoint, "url")
-    embed = discord.Embed(colour=discord.Color.orange()).set_image(url=image_url)
+    embed = discord.Embed(colour=discord.Color.orange()
+                          ).set_image(url=image_url)
     await bot.say(embed=embed)
+
 
 @bot.command(pass_context=True)
 async def search(search_query):
     """Uses Google's Search Engine"""
-    search_query = str(search_query.message.content).split(">search ", maxsplit=1)[1]
-    if len(search_query) > 1: 
+    search_query = str(search_query.message.content).split(
+        ">search ", maxsplit=1)[1]
+    if len(search_query) > 1:
         endpoint = f"https://www.google.co.uk/search?{urlencode({'q':search_query})}&num=10&hl=en"
-        header = {'User-Agent':'Mozilla/5.0 (Windows NT 6.3; Win64; x64) Gecko/20100101 Firefox/53.0'}
+        header = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) Gecko/20100101 Firefox/53.0'}
         results = await google_search(endpoint, header)
         embed = discord.Embed(title="Google Search Results:", colour=discord.Color.orange(),
                               description=f"Top Result: **{results[0]}**\n**More Results**\n"
