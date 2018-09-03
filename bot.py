@@ -50,7 +50,7 @@ async def update_feed():
                 feed_file.close()
         except IOError:
             logging.error("Failed to open feeds.json")
-        channel = discord.Object(id=CHANNEL_ID)
+        channel = discord.Object(id=CHANNEL_ID_NEWS)
         for name, feed_data in feeds.items():
             results = await feed_to_md(None, name, feed_data)
             # Checking if date is the same as date in feeds.json file.
@@ -79,7 +79,7 @@ async def twitter():
                 twitter_file.close()
         except IOError:
             logging.error("Failed to open twitter.json")
-        channel = discord.Object(id=CHANNEL_ID)
+        channel = discord.Object(id=CHANNEL_ID_A)
         twitter_keys = {"keys": [TWITTER_API_KEY, TWITTER_API_S,
                                 TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_S]}
         for name, data in items.items():
