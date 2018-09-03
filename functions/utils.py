@@ -35,7 +35,7 @@ async def get_image(endpoint: str, key: str):
             if ((resp.status) == (200)):
                 json_resp = await resp.json()
                 image_url = json_resp[key]
-                session.close()
+                await session.close()
                 return image_url
             else:
                 logging.error("Get image failed.")
@@ -56,7 +56,7 @@ async def google_search(endpoint: str, header: dict):
                             return results
                         result = f"[{a.get_text()}]({a.get('href')})"
                         results.append(result)
-                session.close()
+                await session.close()
                 return results
             else:
                 logging.error("google_search failed")
