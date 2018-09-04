@@ -1,6 +1,7 @@
 try:
     import discord, logging, asyncio
     from discord.ext import commands
+    from random import choice
     from functions.utils import get_image
     # Import all vars from config.py
     from config import COMMAND_PREFIX, BOT_DESCRIPTION, BOT_TOKEN
@@ -32,6 +33,32 @@ async def on_ready():
 async def add(left: int, right: int):
     """Adds two numbers together"""
     await bot.say(left + right)
+
+
+@bot.command()
+async def flipcoin():
+    """Flips a coin returning either heads or tails"""
+    await bot.say(f":moneybag: {choice(['heads', 'tails'])}")
+
+
+@bot.command(pass_context=True)
+async def teams(players):
+    """From a list of players create two teams"""
+    players = players.message.content.split(" ", -1)
+    players.remove(">teams")
+    team1 = []
+    team2 = []
+    while len(players) > 0:
+            player1 = choice(players)
+            team1.append(player1)
+            players.remove(player1)
+            # Check if the list is empty.
+            if bool(players) == False:
+                continue
+            player2 = choice(players)
+            team2.append(player2)
+            players.remove(player2)
+    await bot.say(f"**Team 1:** {team1}\n**Team 2:** {team2}")
 
 
 @bot.command()
