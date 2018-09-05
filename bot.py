@@ -99,6 +99,7 @@ if __name__ == "__main__":
     bot.load_extension('functions.rss')
     bot.load_extension('functions.twitter')
     bot.load_extension('functions.google_search')
+    bot.load_extension('functions.weather')
 
     # Creates RSS Background Task
     rss = bot.get_cog('Rss')

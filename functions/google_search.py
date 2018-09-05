@@ -3,7 +3,7 @@ try:
     from discord.ext import commands
     from urllib.parse import urlencode
 except ImportError as err:
-    logging.error(f"Failed to import required modules for rss.py: {err}")
+    logging.error(f"Failed to import required modules for google_search.py: {err}")
 
 class Search:
     def __init__(self, bot):

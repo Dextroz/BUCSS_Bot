@@ -1,6 +1,14 @@
 # BUCSS_Bot
 A discord bot for [BUCSS](https://www.bucss.net/) (Bournemouth University Cyber Security Society)
 
+## Features
+
+* Automated RSS feed reading and posting.
+* Automated Twitter feed reading.
+* Google search functionality
+* Weather lookup functionality.
+* Other useful commands: cat, dog, teams, coinflip, add and more.
+
 ## Dependancies
 The bot is written in Python 3.6 so its **REQUIRED**
 
@@ -41,6 +49,8 @@ TWITTER_API_KEY = ""
 TWITTER_API_S = ""
 TWITTER_ACCESS_TOKEN = ""
 TWITTER_ACCESS_TOKEN_S = ""
+MAPBOX_KEY = ""
+DARK_SKY_KEY = ""
 ```
 
 To use the bot do the following:
