@@ -3,7 +3,7 @@ try:
     from discord.ext import commands
     from random import choice
     from functions.utils import get_image
-    # Import all vars from config.py
+    # Import required vars from config.py
     from config import COMMAND_PREFIX, BOT_DESCRIPTION, BOT_TOKEN
 except ImportError as err:
     print(f"Failed to import required modules for bot.py: {err}")
@@ -90,7 +90,7 @@ async def dog():
 if __name__ == "__main__":
     # Setup Logging for errors.
     logger = logging.getLogger('discord')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
