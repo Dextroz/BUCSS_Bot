@@ -1,7 +1,7 @@
 try:
     import aiohttp, logging, bs4, json
 except ImportError as err:
-    logging.error(f"Failed to import required modules for utils.py: {err}")
+    logging.debug(f"Failed to import required modules for utils.py: {err}")
 
 
 async def set_date(file_name, object_name, post_date: str):
@@ -24,7 +24,7 @@ async def set_date(file_name, object_name, post_date: str):
                     data_file.truncate()
             data_file.close()
     except IOError:
-        logging.error("set_date(): Failed to open requested file.")
+        logging.debug("set_date(): Failed to open requested file.")
 
 
 async def get_image(endpoint: str, key: str):
@@ -39,7 +39,7 @@ async def get_image(endpoint: str, key: str):
                 await session.close()
                 return image_url
             else:
-                logging.error("Get image failed.")
+                logging.debug("Get image failed.")
                 # Close the session if RESP is != 200. eg: Failed.
                 await session.close()
  
@@ -53,5 +53,5 @@ async def file_reader(path, mode):
             target_file.close()
             return data
     except IOError:
-        logging.error(f"Failed to open {path}")
+        logging.debug(f"Failed to open {path}")
         return None

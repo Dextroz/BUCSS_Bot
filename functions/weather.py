@@ -3,7 +3,7 @@ try:
     from discord.ext import commands
     from config import MAPBOX_KEY, DARK_SKY_KEY
 except ImportError as err:
-    logging.error(f"Failed to import required modules for weather.py: {err}")
+    logging.debug(f"Failed to import required modules for weather.py: {err}")
 
 
 class Weather:
@@ -28,7 +28,7 @@ class Weather:
                     await session.close()
                     return results
                 else:
-                    logging.error("mapbox failed.")
+                    logging.debug("mapbox failed.")
                     await session.close()
 
     async def darksky(self, results: list):
@@ -51,7 +51,7 @@ class Weather:
                     await session.close()
                     return results
                 else:
-                    logging.error("darksky failed.")
+                    logging.debug("darksky failed.")
                     await session.close()
 
     @commands.command(pass_context=True)
@@ -69,7 +69,7 @@ class Weather:
             await self.bot.say(embed=embed)
         except IndexError:
             await self.bot.say(":no_entry_sign: weather function is missing location parameters")
-            logging.error("weather function is missing location parameters")
+            logging.debug("weather function is missing location parameters")
 
 
 def setup(bot):

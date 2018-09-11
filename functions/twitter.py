@@ -5,7 +5,7 @@ try:
     from peony import PeonyClient
     from .utils import set_date, file_reader
 except ImportError as err:
-    logging.error(f"Failed to import required modules for rss.py: {err}")
+    logging.debug(f"Failed to import required modules for rss.py: {err}")
 
 class Tweeter:
     def __init__(self, bot, channel):
@@ -25,15 +25,15 @@ class Tweeter:
             for name, data in items.items():
                 results = await self.twitter_search(None, name)
                 if ((data["date"]) == (results[0]["date"])):
-                    continue
-
-                logging.info(
-                        f"Running twitter_search for {name} at {datetime.datetime.now()}")
-                results = await self.twitter_search("set", name)
-                embed = discord.Embed(title=results[0]["username"], url=results[0]["url"],
-                                    description=results[0]["text"], colour=discord.Color.orange())
-                embed.set_footer(text=results[0]["date"])
-                await self.bot.send_message(self.channel, embed=embed)
+                    pass
+                elif ((data["date"]) != (results[0]["date"])):
+                    logging.debug(
+                            f"Running twitter_search for {name} at {datetime.datetime.now()}")
+                    results = await self.twitter_search("set", name)
+                    embed = discord.Embed(title=results[0]["username"], url=results[0]["url"],
+                                        description=results[0]["text"], colour=discord.Color.orange())
+                    embed.set_footer(text=results[0]["date"])
+                    await self.bot.send_message(self.channel, embed=embed)
             # Sleep for 1 hour before re-checking.
             await asyncio.sleep(3600)
     
@@ -52,6 +52,7 @@ class Tweeter:
             url = f"https://twitter.com/{username}/status/{tweet_id}"
             date = tweet["created_at"]
             if ((state) == ("set")):
+                logging.debug(f"Running set_date for twitter_search at {datetime.datetime.now()}")
                 await set_date("twitter.json", name, date)
             result = {"username": username, "text": text, "url": url, "date": date}
             results.append(result)

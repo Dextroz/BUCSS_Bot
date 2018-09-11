@@ -3,7 +3,7 @@ try:
     from discord.ext import commands
     from urllib.parse import urlencode
 except ImportError as err:
-    logging.error(f"Failed to import required modules for google_search.py: {err}")
+    logging.debug(f"Failed to import required modules for google_search.py: {err}")
 
 class Search:
     def __init__(self, bot):
@@ -29,7 +29,7 @@ class Search:
                     await session.close()
                     return results
                 else:
-                    logging.error("google_search failed")
+                    logging.debug("google_search failed")
                     # Close the session if RESP is != 200. eg: Failed.
                     await session.close()
     
@@ -46,7 +46,7 @@ class Search:
             await self.bot.say(embed=embed)
         else:
             await self.bot.say(":no_entry_sign: Search function is missing search parameters")
-            logging.error("Search function is missing search parameters")
+            logging.debug("Search function is missing search parameters")
     
 
 def setup(bot):
