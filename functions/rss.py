@@ -1,7 +1,7 @@
 try:
     import logging, feedparser, html2text, asyncio, datetime, discord
     from discord.ext import commands
-    from .utils import set_date, file_reader
+    from .utils import date_title, file_reader
     from config import CHANNEL_ID_NEWS
 except ImportError as err:
     logging.debug(f"Failed to import required modules for rss.py: {err}")
@@ -13,7 +13,7 @@ class Rss:
 
     async def feed_to_md(self, state, name, feed_data):
         """A Function for converting rss feeds into markdown text.
-        state: Either `set` or `None`: To execute set_date()
+        state: Either `set` or `None`: To execute date_title()
         name: Name of RSS feed object: eg: hacker_news
         feed_data: Data of the feed: URL and post_date from feeds.json"""
         # Parse rss feed.
@@ -29,9 +29,9 @@ class Rss:
         h.ignore_links = True
         summary = h.handle(summary)
         if ((state) == ("set")):
-            logging.debug(f"Running set_date for feeds.json at {datetime.datetime.now()}")
-            # set_date() see utils.py
-            await set_date("feeds.json", name, post_date)
+            logging.debug(f"Running date_title for feeds.json at {datetime.datetime.now()}")
+            # date_title() see utils.py
+            await date_title("feeds.json", name, title)
         results = []
         result = {"title": title, "summary": summary, "url": link, "post_date": post_date}
         results.append(result)
@@ -46,11 +46,11 @@ class Rss:
 
             for name, feed_data in feeds.items():
                 results = await self.feed_to_md(None, name, feed_data)
-                # Checking if date is the same as date in feeds.json file.
+                # Checking if title is the same as date in feeds.json file.
                 # If the same, pass; do nothing.
-                if ((feed_data["date"]) == (results[0]["post_date"])):
+                if ((feed_data["date_title"]) == (results[0]["title"])):
                     pass
-                elif ((feed_data["date"]) != (results[0]["post_date"])):
+                elif ((feed_data["date_title"]) != (results[0]["title"])):
                     logging.debug(
                         f"Running feed_to_md for {name} at {datetime.datetime.now()}")
                     results = await self.feed_to_md("set", name, feed_data)

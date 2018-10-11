@@ -27,7 +27,7 @@ Add rss feeds to [feeds.json](feeds.json) in the format of:
 ,
 "Insert a title here": {
     "url": "Insert RSS feed url here.",
-    "date": ""
+    "date_title": ""
   }
 ```
 
@@ -35,7 +35,7 @@ Add twitter screen name (Username) to [twitter.json](twitter.json) in the format
 ```
 ,
 "Insert twitter screen name (username) here.": {
-    "date": ""
+    "date_title": ""
   }
 ```
 

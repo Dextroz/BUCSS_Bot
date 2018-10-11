@@ -4,19 +4,19 @@ except ImportError as err:
     logging.debug(f"Failed to import required modules for utils.py: {err}")
 
 
-async def set_date(file_name, object_name, post_date: str):
-    """Set the date of latest post from a source.
+async def date_title(file_name, object_name, date_title: str):
+    """Set the date/title of latest post from a source.
     file_name: File name to open.
-    Object_name: Name of the object: rss: hacker_news or twitter screen name.
-    post_date: Date of the object being posted."""
+    Object_name: Name of the object: feed name or twitter screen name.
+    date_title: Date/title of the object being posted."""
     try:
         with open(file_name, "r+") as data_file:
             # Load json structure into memory.
             items = json.load(data_file)
             for name, data in items.items():
                 if ((name) == (object_name)):
-                    # Replace value of date with post_date
-                    data["date"] = post_date
+                    # Replace value of date/title with date_title
+                    data["date_title"] = date_title
                     # Go to the top of feeds.json file.
                     data_file.seek(0)
                     # Dump the new json structure to the file.
@@ -24,7 +24,7 @@ async def set_date(file_name, object_name, post_date: str):
                     data_file.truncate()
             data_file.close()
     except IOError:
-        logging.debug("set_date(): Failed to open requested file.")
+        logging.debug("date_title(): Failed to open requested file.")
 
 
 async def get_image(endpoint: str, key: str):

@@ -1,14 +1,14 @@
 {
   "hacker_news": {
     "url": "https://feeds.feedburner.com/TheHackersNews",
-    "date": ""
+    "date_title": ""
   },
   "krebs_security": {
     "url": "https://krebsonsecurity.com/feed/",
-    "date": ""
+    "date_title": ""
   },
   "latest_hacking_news": {
     "url": "https://latesthackingnews.com/feed/",
-    "date": ""
+    "date_title": ""
   }
 }

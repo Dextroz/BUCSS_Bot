@@ -3,7 +3,7 @@ try:
     from config import TWITTER_API_KEY, TWITTER_API_S, CHANNEL_ID_A
     from config import TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_S
     from peony import PeonyClient
-    from .utils import set_date, file_reader
+    from .utils import date_title, file_reader
 except ImportError as err:
     logging.debug(f"Failed to import required modules for rss.py: {err}")
 
@@ -24,9 +24,9 @@ class Tweeter:
 
             for name, data in items.items():
                 results = await self.twitter_search(None, name)
-                if ((data["date"]) == (results[0]["date"])):
+                if ((data["date_title"]) == (results[0]["date"])):
                     pass
-                elif ((data["date"]) != (results[0]["date"])):
+                elif ((data["date_title"]) != (results[0]["date"])):
                     logging.debug(
                             f"Running twitter_search for {name} at {datetime.datetime.now()}")
                     results = await self.twitter_search("set", name)
@@ -39,7 +39,7 @@ class Tweeter:
     
     async def twitter_search(self, state, name):
         """Search twitter for a top tweet
-        state: Either `set` or `None`: To execute set_date()
+        state: Either `set` or `None`: To execute date_title()
         name: Name of the object for lookup: Twitter screen name."""
         resp = await self.client.api.statuses.user_timeline.get(count=1, 
                                                                 screen_name=name,
@@ -52,8 +52,8 @@ class Tweeter:
             url = f"https://twitter.com/{username}/status/{tweet_id}"
             date = tweet["created_at"]
             if ((state) == ("set")):
-                logging.debug(f"Running set_date for twitter_search at {datetime.datetime.now()}")
-                await set_date("twitter.json", name, date)
+                logging.debug(f"Running date_title for twitter_search at {datetime.datetime.now()}")
+                await date_title("twitter.json", name, date)
             result = {"username": username, "text": text, "url": url, "date": date}
             results.append(result)
             return results
