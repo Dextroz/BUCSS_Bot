@@ -10,5 +10,9 @@
   "latest_hacking_news": {
     "url": "https://latesthackingnews.com/feed/",
     "date_title": ""
+  },
+  "haveibeenpwned": {
+    "url": "https://feeds.feedburner.com/HaveIBeenPwnedLatestBreaches",
+    "date_title": ""
   }
 }
