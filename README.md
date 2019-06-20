@@ -66,7 +66,7 @@ To use the bot do the following:
 
 ## Authors -- Contributors
 
-* **Daniel Brennand** - *Author* - [Dextroz](https://github.com/Dextroz)
+* **Dextroz** - *Author* - [Dextroz](https://github.com/Dextroz)
 * **A** - *Contributor* - [A](https://github.com/s5003597)
 
 ## License
