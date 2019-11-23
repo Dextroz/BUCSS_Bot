@@ -10,7 +10,7 @@ A discord bot for [BUCSS](https://www.bucss.net/) (Bournemouth University Cyber 
 * Other useful commands: cat, dog, teams, coinflip, add and more.
 
 ## Dependancies
-The bot is written in Python 3.6 so its **REQUIRED**
+The bot is written in Python 3.7.5 so its **REQUIRED**
 
 To install all the dependancies using pip; run the following command:
 ```
@@ -42,7 +42,8 @@ Add twitter screen name (Username) to [twitter.json](twitter.json) in the format
 Configure the required variables in [config.py](config.py):
 ```
 BOT_TOKEN = "Insert Bot Token Here."
-CHANNEL_ID = "Insert Channel ID Here."
+CHANNEL_ID_A = 
+CHANNEL_ID_NEWS = 
 COMMAND_PREFIX = "Insert Command Prefix Here."
 BOT_DESCRIPTION = "Insert Bot Description Here."
 TWITTER_API_KEY = ""
@@ -55,14 +56,16 @@ DARK_SKY_KEY = ""
 
 To use the bot do the following:
 
-1. Head to [discord application](https://discordapp.com/developers/applications/) and select an **create an application**.
-2. Under settings select bot; See image below:
-
-![bot.png](bot.png)
-
-4. Execute the [bot.py](bot.py) and go to the link provided in the console:
+1. Head to [discord application](https://discordapp.com/developers/applications/) and click **New Application**.
+2. Provide a *Name* for the application and click **Create**.
+3. On the left panel, select *Bot*.
+4. Click **Add Bot**.
+5. Click **Yes, do it!**.
+6. Once created, copy the bots token and place it in [config.py](config.py).
+7.Execute the [bot.py](bot.py) and go to the link provided in the console:
     Should look something like: `https://discordapp.com/api/oauth2/authorize?client_id={bot.user.id}&scope=bot&permissions=8`
-5. Select the server for the bot to be added to.
+8. Select the server for the bot to be added to.
+9. Congratulations, you have now added the bot to your server!
 
 ## Authors -- Contributors
 

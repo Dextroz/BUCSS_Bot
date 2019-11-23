@@ -1,6 +1,6 @@
 BOT_TOKEN = "Insert Bot Token Here."
-CHANNEL_ID_A = "Insert Channel ID Here."
-CHANNEL_ID_NEWS = "Insert Channel ID Here."
+CHANNEL_ID_A = 
+CHANNEL_ID_NEWS = 
 COMMAND_PREFIX = "Insert Command Prefix Here."
 BOT_DESCRIPTION = "Insert Bot Description Here."
 TWITTER_API_KEY = ""
