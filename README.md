@@ -9,10 +9,10 @@ A discord bot for [BUCSS](https://www.bucss.net/) (Bournemouth University Cyber 
 * Weather lookup functionality.
 * Other useful commands: cat, dog, teams, coinflip, add and more.
 
-## Dependancies
+## Dependencies
 The bot is written in Python 3.7.5 so its **REQUIRED**
 
-To install all the dependancies using pip; run the following command:
+To install all the dependencies using pip; run the following command:
 ```
 pip3 install -r requirements.txt
 ```
@@ -66,6 +66,14 @@ To use the bot do the following:
     Should look something like: `https://discordapp.com/api/oauth2/authorize?client_id={bot.user.id}&scope=bot&permissions=8`
 8. Select the server for the bot to be added to.
 9. Congratulations, you have now added the bot to your server!
+
+### Container
+
+* Complete all the prerequisites before running these commands.
+
+1. `sudo podman build -t bucss_bot .`
+
+2. `sudo podman run --rm -t bucss_bot`
 
 ## Authors -- Contributors
 
